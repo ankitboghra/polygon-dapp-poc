@@ -1,5 +1,9 @@
 # Getting Started with Create React App
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/aa40732f-0b38-437e-8842-05fbd988212d/deploy-status)](https://app.netlify.com/sites/polygon-dapp-poc/deploys)
+
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
