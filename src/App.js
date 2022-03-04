@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { POSClient, use } from "@maticnetwork/maticjs"
 import { Web3ClientPlugin } from '@maticnetwork/maticjs-web3'
 import Web3 from 'web3'
-import Network from "@maticnetwork/meta/network"
+// import Network from "@maticnetwork/meta/network"
 import BigNumber from "bignumber.js"
 
 
@@ -19,10 +19,10 @@ const networkVersion = 'mumbai' // 'v1'
 // get all network details from polygon's static repo
 // you can define details locally, but getting details from
 // this repo is recommended
-const network = new Network(networkName, networkVersion)
+// const network = new Network(networkName, networkVersion)
 
-const MainNetworkDetails = Object.freeze(network.Main) // all info related to Main
-const MaticNetworkDetails = Object.freeze(network.Matic)  // all info related to Matic
+// const MainNetworkDetails = Object.freeze(network.Main) // all info related to Main
+// const MaticNetworkDetails = Object.freeze(network.Matic)  // all info related to Matic
 
 const tokenAddress = '0xfe4F5145f6e09952a5ba9e956ED0C25e3Fa4c7F1' // can get from polygon faucet
 const toAddress = '0x2254E4D1B41F2Dd3969a79b994E6ee8C3C6F2C71'
@@ -239,7 +239,7 @@ function App() {
 
   return (
     <div className='main-app'>
-      <h1>Dapp example with Polygon</h1>
+      <h1>DApp example with Polygon</h1>
       <div>
         {currentAccount ? transferTokenButton() : connectWalletButton()}
       </div>
