@@ -37,7 +37,6 @@ function App() {
 
   const [tokenBalance, setTokenBalance] = useState(null);
   const [txHash, setTxHash] = useState(null);
-  const [txReceipt, setTxReceipt] = useState(null);
 
   const checkWalletIsConnected = async () => {
     if (typeof window.ethereum !== 'undefined') {
@@ -103,7 +102,7 @@ function App() {
       setTxHash(txHash)
 
       const txReceipt = await result.getReceipt();
-      setTxReceipt(txReceipt)
+      console.log('txReceipt:', txReceipt);
 
     } catch (err) {
       console.log(err)
@@ -171,10 +170,6 @@ function App() {
           <span>Transaction Hash: </span>
           <span>{txHash}</span>
         </p>
-        <p className='detail'>
-          <span>Transaction Receipt: </span>
-          <span>{txReceipt}</span>
-        </p>
       </div>
     )
   }
@@ -207,8 +202,11 @@ function App() {
       (async () => {
         const posClient = new POSClient();
 
-        var mainProvider = new Web3(new Web3.providers.HttpProvider(process.env.REACT_APP_MAIN_RPC));
-        var maticProvider = new Web3(new Web3.providers.HttpProvider(process.env.REACT_APP_MATIC_RPC));
+        // window.ethereum will have the network
+        // provider that is selected in metamask
+        // for transfer, switch to polygon network
+        var mainProvider = new Web3(window.ethereum);
+        var maticProvider = new Web3(window.ethereum);
 
         await posClient.init({
           network: networkName,  // 'testnet' or 'mainnet'
