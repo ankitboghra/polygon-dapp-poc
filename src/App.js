@@ -80,55 +80,7 @@ function App() {
     }
   }
 
-  const initPosClient = async () => {
-    const posClient = new POSClient();
-
-    var mainProvider = new Web3(new Web3.providers.HttpProvider(process.env.REACT_APP_MAIN_RPC));
-    var maticProvider = new Web3(new Web3.providers.HttpProvider(process.env.REACT_APP_MATIC_RPC));
-
-    await posClient.init({
-      network: networkName,  // 'testnet' or 'mainnet'
-      version: networkVersion, // 'mumbai' or 'v1'
-      parent: {
-        provider: mainProvider,
-        defaultConfig: {
-          from: currentAccount
-        }
-      },
-      child: {
-        provider: maticProvider,
-        defaultConfig: {
-          from: currentAccount
-        }
-      }
-    });
-
-    setPosClient(posClient)
-  }
-
   const amount = 0.1
-
-  const getTokenBalanceHandler = async () => {
-    const { ethereum } = window;
-
-    if (!ethereum) {
-      alert("Metamask not installed");
-    }
-
-    try {
-      const erc20Token = posClient.erc20(tokenAddress, false);
-
-      const balance = await erc20Token.getBalance(currentAccount)
-
-      const parsedTokenBalance = new BigNumber(balance).div(
-        TEN.pow(new BigNumber(tokenDecimals))
-      ).toString()
-      setTokenBalance(parsedTokenBalance)
-
-    } catch (err) {
-      console.log(err)
-    }
-  }
 
   const transferTokenHandler = async () => {
     const { ethereum } = window;
@@ -178,6 +130,7 @@ function App() {
   const accountDetails = () => {
     return (
       <div className='details'>
+        <h2>Account Details</h2>
         <p className='detail'>
           <span>Chain Id: </span>
           <span>{currentNetworkId}</span>
@@ -190,9 +143,10 @@ function App() {
     )
   }
 
-  const transactionDetails = () => {
+  const tokenDetails = () => {
     return (
       <div className='details'>
+        <h2>Token Details</h2>
         <p className='detail'>
           <span>TokenAddress: </span>
           <span>{tokenAddress}</span>
@@ -201,6 +155,14 @@ function App() {
           <span>TokenBalance: </span>
           <span>{tokenBalance}</span>
         </p>
+      </div>
+    )
+  }
+
+  const transactionDetails = () => {
+    return (
+      <div className='details'>
+        <h2>Transaction Details</h2>
         <p className='detail'>
           <span>Sending to: </span>
           <span>{toAddress}</span>
@@ -217,25 +179,94 @@ function App() {
     )
   }
 
+  const otherOnboardingDetails = () => {
+    return (
+      <div className='details'>
+        <h2>NOTE</h2>
+        <p className='detail'>
+          Please switch to <span>Mumbai Testnet network</span> for executing the transaction.
+        </p>
+        <p className='detail'>
+          Currently used token is <span>Dummy ERC20 (DERC20)</span>
+        </p>
+        <p className='detail'>
+          You can get this test token from <a href='https://faucet.polygon.technology/' target='_blank' rel='noreferrer noopener'>Polygon Faucet</a>.
+          Select <span className='bold'>TEST ERC20 (POS)</span> on <span className='bold'>Mumbai Network</span>.
+        </p>
+      </div>
+    )
+  }
+
   useEffect(() => {
     checkWalletIsConnected();
   }, [])
 
-  useEffect(async () => {
+  useEffect(() => {
     // initialize maticjs pos client
     if (currentAccount) {
-      await initPosClient()
+      (async () => {
+        const posClient = new POSClient();
+
+        var mainProvider = new Web3(new Web3.providers.HttpProvider(process.env.REACT_APP_MAIN_RPC));
+        var maticProvider = new Web3(new Web3.providers.HttpProvider(process.env.REACT_APP_MATIC_RPC));
+
+        await posClient.init({
+          network: networkName,  // 'testnet' or 'mainnet'
+          version: networkVersion, // 'mumbai' or 'v1'
+          parent: {
+            provider: mainProvider,
+            defaultConfig: {
+              from: currentAccount
+            }
+          },
+          child: {
+            provider: maticProvider,
+            defaultConfig: {
+              from: currentAccount
+            }
+          }
+        });
+
+        setPosClient(posClient)
+      })()
     }
-  }, [currentAccount])
+  }, [currentAccount, setPosClient])
 
   useEffect(() => {
     if (posClient) {
-      setIsPosClientInitialized(true)
-      getTokenBalanceHandler()
+      try {
+
+        setIsPosClientInitialized(true)
+      } catch (e) {
+        // todo: understand why try catch is required here
+      }
+
+      // get token balance
+      (async () => {
+        const { ethereum } = window;
+
+        if (!ethereum) {
+          alert("Metamask not installed");
+        }
+
+        try {
+          const erc20Token = posClient.erc20(tokenAddress, false);
+
+          const balance = await erc20Token.getBalance(currentAccount)
+
+          const parsedTokenBalance = new BigNumber(balance).div(
+            TEN.pow(new BigNumber(tokenDecimals))
+          ).toString()
+          setTokenBalance(parsedTokenBalance)
+
+        } catch (err) {
+          console.log(err)
+        }
+      })()
     } else {
       setIsPosClientInitialized(false)
     }
-  }, [posClient])
+  }, [currentAccount, posClient])
 
   return (
     <div className='main-app'>
@@ -246,7 +277,11 @@ function App() {
 
       {accountDetails()}
 
+      {tokenDetails()}
+
       {transactionDetails()}
+
+      {otherOnboardingDetails()}
 
     </div>
   )

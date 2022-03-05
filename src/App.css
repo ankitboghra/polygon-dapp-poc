@@ -32,12 +32,31 @@ button[disabled] {
 }
 
 .details {
-  padding: 20px;
-  margin: 20px;
+  padding: 10px 20px;
+  margin: 20px auto;
   border: 1px solid gray;
   border-radius: 12px;
+  max-width: 750px;
+  text-align: center;
+  word-break: break-all;
 }
 
-.detail :first-child {
+.details h2 {
+  /* background: red; */
+  margin: 0;
+}
+.detail {
+  margin: 12px 0;
+}
+.details .detail:last-child {
+  margin: 12px 0 6px 0;
+  /* background: red; */
+}
+
+.detail span:first-of-type {
+  font-weight: bold;
+}
+
+.bold {
   font-weight: bold;
 }
