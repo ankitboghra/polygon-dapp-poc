@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { POSClient, use } from "@maticnetwork/maticjs"
+import { ZkEvmClient, use } from "@maticnetwork/maticjs"
 import { Web3ClientPlugin } from '@maticnetwork/maticjs-web3'
 import Web3 from 'web3'
 // import Network from "@maticnetwork/meta/network"
@@ -14,7 +14,7 @@ const TEN = new BigNumber(10)
 
 // define network
 const networkName = 'testnet' // 'mainnet'
-const networkVersion = 'mumbai' // 'v1'
+const networkVersion = 'blueberry' // 'v1'
 
 // get all network details from polygon's static repo
 // you can define details locally, but getting details from
@@ -24,7 +24,7 @@ const networkVersion = 'mumbai' // 'v1'
 // const MainNetworkDetails = Object.freeze(network.Main) // all info related to Main
 // const MaticNetworkDetails = Object.freeze(network.Matic)  // all info related to Matic
 
-const tokenAddress = '0xfe4F5145f6e09952a5ba9e956ED0C25e3Fa4c7F1' // can get from polygon faucet
+const tokenAddress = '0xd1F91A9be1Cc816e317FE8c69f32589182B85c09'
 const toAddress = '0x2254E4D1B41F2Dd3969a79b994E6ee8C3C6F2C71'
 const tokenDecimals = 18
 
@@ -32,8 +32,8 @@ function App() {
 
   const [currentAccount, setCurrentAccount] = useState(null);
   const [currentNetworkId, setCurrentNetworkId] = useState(null);
-  const [posClient, setPosClient] = useState(null);
-  const [isPosClientInitialized, setIsPosClientInitialized] = useState(false);
+  const [zkClient, setzkClient] = useState(null);
+  const [iszkClientInitialized, setIszkClientInitialized] = useState(false);
 
   const [tokenBalance, setTokenBalance] = useState(null);
   const [txHash, setTxHash] = useState(null);
@@ -93,7 +93,7 @@ function App() {
         TEN.pow(new BigNumber(tokenDecimals))
       ).toString()
 
-      const erc20Token = posClient.erc20(tokenAddress);
+      const erc20Token = zkClient.erc20(tokenAddress);
 
       const result = await erc20Token.transfer(unparsedToAmount, toAddress);
       console.log(erc20Token);
@@ -120,7 +120,7 @@ function App() {
 
   const transferTokenButton = () => {
     return (
-      <button onClick={transferTokenHandler} className='cta-button connect-wallet-button' disabled={!isPosClientInitialized}>
+      <button onClick={transferTokenHandler} className='cta-button connect-wallet-button' disabled={!iszkClientInitialized}>
         Transfer Token
       </button>
     )
@@ -179,14 +179,10 @@ function App() {
       <div className='details'>
         <h2>NOTE</h2>
         <p className='detail'>
-          Please switch to <span>Mumbai Testnet network</span> for executing the transaction.
+          Please switch to <span>blueberry Testnet network</span> for executing the transaction.
         </p>
         <p className='detail'>
-          Currently used token is <span>Dummy ERC20 (DERC20)</span>
-        </p>
-        <p className='detail'>
-          You can get this test token from <a href='https://faucet.polygon.technology/' target='_blank' rel='noreferrer noopener'>Polygon Faucet</a>.
-          Select <span className='bold'>TEST ERC20 (POS)</span> on <span className='bold'>Mumbai Network</span>.
+          Currently used token is <span>bbnative</span> (0xd1F91A9be1Cc816e317FE8c69f32589182B85c09)
         </p>
       </div>
     )
@@ -197,18 +193,18 @@ function App() {
   }, [])
 
   useEffect(() => {
-    // initialize maticjs pos client
+    // initialize maticjs zkEVM client
     if (currentAccount) {
       (async () => {
-        const posClient = new POSClient();
+        const zkClient = new ZkEvmClient();
 
         // window.ethereum will have the network
         // provider that is selected in metamask
         // for transfer, switch to polygon network
-        var mainProvider = new Web3(window.ethereum);
-        var maticProvider = new Web3(window.ethereum);
+        const mainProvider = new Web3(window.ethereum);
+        const maticProvider = new Web3(window.ethereum);
 
-        await posClient.init({
+        await zkClient.init({
           network: networkName,  // 'testnet' or 'mainnet'
           version: networkVersion, // 'mumbai' or 'v1'
           parent: {
@@ -225,16 +221,16 @@ function App() {
           }
         });
 
-        setPosClient(posClient)
+        setzkClient(zkClient)
       })()
     }
-  }, [currentAccount, setPosClient])
+  }, [currentAccount, setzkClient])
 
   useEffect(() => {
-    if (posClient) {
+    if (zkClient) {
       try {
 
-        setIsPosClientInitialized(true)
+        setIszkClientInitialized(true)
       } catch (e) {
         // todo: understand why try catch is required here
       }
@@ -248,7 +244,7 @@ function App() {
         }
 
         try {
-          const erc20Token = posClient.erc20(tokenAddress, false);
+          const erc20Token = zkClient.erc20(tokenAddress, false);
 
           const balance = await erc20Token.getBalance(currentAccount)
 
@@ -262,13 +258,13 @@ function App() {
         }
       })()
     } else {
-      setIsPosClientInitialized(false)
+      setIszkClientInitialized(false)
     }
-  }, [currentAccount, posClient])
+  }, [currentAccount, zkClient])
 
   return (
     <div className='main-app'>
-      <h1>DApp example with Polygon</h1>
+      <h1>Polygon zkEvm DApp example using matic.js</h1>
       <div>
         {currentAccount ? transferTokenButton() : connectWalletButton()}
       </div>

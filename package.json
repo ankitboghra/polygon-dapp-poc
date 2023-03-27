@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@maticnetwork/maticjs": "^3.2.3",
+    "@maticnetwork/maticjs": "^3.6.0-beta.9",
     "@maticnetwork/maticjs-web3": "^1.0.1",
     "@maticnetwork/meta": "^2.4.32",
     "@testing-library/jest-dom": "^5.16.2",
